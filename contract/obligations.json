@@ -1,0 +1,18 @@
+{
+  "version": "1",
+  "endpoint": "/api/public/obligations",
+  "note": "The public contract of GET /api/public/obligations. The public MCP server (github.com/Domera-proptech/mcp-server, contract/obligations.json) must match this file. lib/__tests__/public-obligations-contract.test.ts fails when the backend and this file disagree; update this file, the copy in the MCP repo and the MCP tool schema together, then redeploy the Worker.",
+  "query": {
+    "ventilation": ["FT_FTX", "F_FX_S"],
+    "lift": ["true", "false"],
+    "lang": ["en", "sv", "es"],
+    "lastDoneKeys": ["ELEVATOR_INSPECTION", "ENERGY_DECLARATION", "FIRE_SAFETY", "LEGIONELLA", "OVK", "RADON"]
+  },
+  "response": {
+    "topLevelKeys": ["country", "disclaimer", "knownKeys", "language", "obligations"],
+    "obligationKeys": ["category", "countsAsDone", "daysToDue", "doneBy", "dueDate", "intervalConfirmed", "intervalMonths", "key", "legalBasis", "name", "needsFact", "status"],
+    "category": ["legal", "recommended"],
+    "status": ["done", "dueSoon", "overdue", "unknown"],
+    "needsFact": ["lift", "ventilation", null]
+  }
+}

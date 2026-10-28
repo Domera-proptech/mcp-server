@@ -1,0 +1,42 @@
+name: Deploy Worker
+
+# Deploys mcp.domera.se when the Worker code changes. Needs two repository secrets
+# (CLOUDFLARE_API_TOKEN with the "Edit Cloudflare Workers" template, CLOUDFLARE_ACCOUNT_ID);
+# without them the job stops with a clear message instead of failing obscurely.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "wrangler.jsonc"
+      - "package.json"
+      - "package-lock.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check deploy secrets
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID as repository secrets to enable deploys."
+            exit 1
+          fi
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "lts/*"
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - name: Deploy
+        run: npx wrangler@4 deploy
+      - name: Smoke test the live endpoint
+        run: node scripts/live-contract.mjs
