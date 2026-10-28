@@ -1,0 +1,47 @@
+{
+  "name": "@domera/mcp-server",
+  "version": "0.1.0",
+  "description": "Free MCP server: legal inspections and compliance calendar for Swedish residential buildings (OVK, energy declaration, lifts, radon, legionella, fire safety).",
+  "license": "MIT",
+  "mcpName": "io.github.Domera-proptech/mcp",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Domera-proptech/mcp-server.git"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "domera-mcp": "dist/stdio.js"
+  },
+  "files": [
+    "dist",
+    "server.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/http.js",
+    "test": "node --test dist/test/*.test.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.20.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "author": {
+    "name": "Domera (Schumacher Management AB)",
+    "email": "hej@domera.se",
+    "url": "https://domera.se"
+  },
+  "homepage": "https://domera.se",
+  "bugs": {
+    "email": "hej@domera.se"
+  }
+}

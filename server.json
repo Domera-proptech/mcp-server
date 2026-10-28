@@ -1,0 +1,10 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.Domera-proptech/mcp",
+  "title": "Domera: Swedish building compliance",
+  "description": "Free MCP server for Swedish property compliance: OVK, energy declaration, lift, radon, legionella and fire-safety inspections, with intervals, legal basis and due dates.",
+  "version": "0.1.0",
+  "websiteUrl": "https://domera.se",
+  "repository": { "url": "https://github.com/Domera-proptech/mcp-server", "source": "github" },
+  "remotes": [{ "type": "streamable-http", "url": "https://mcp.domera.se/mcp" }]
+}
