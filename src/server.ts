@@ -36,7 +36,10 @@ export function createServer(fetchImpl: typeof fetch = fetch): McpServer {
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     async (args) => {
-      const res = await fetchImpl(`${API}/api/public/obligations?${buildQuery(args)}`, { headers: { accept: "application/json" } });
+      // On Cloudflare the origin sees shared egress IPs, so identical queries are cached at the edge for a few
+      // minutes (the origin sends no-store; cacheEverything overrides that). Ignored by plain Node fetch.
+      const init = { headers: { accept: "application/json" }, cf: { cacheTtl: 300, cacheEverything: true } } as RequestInit;
+      const res = await fetchImpl(`${API}/api/public/obligations?${buildQuery(args)}`, init);
       if (!res.ok) return { isError: true, content: [{ type: "text", text: `Domera API answered ${res.status}.` }] };
       return { content: [{ type: "text", text: JSON.stringify(await res.json(), null, 2) }] };
     }
