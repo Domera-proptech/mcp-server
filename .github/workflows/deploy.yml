@@ -1,8 +1,8 @@
 name: Deploy Worker
 
 # Deploys mcp.domera.se when the Worker code changes. Needs two repository secrets
-# (CLOUDFLARE_API_TOKEN with the "Edit Cloudflare Workers" template, CLOUDFLARE_ACCOUNT_ID);
-# without them the job stops with a clear message instead of failing obscurely.
+# (CLOUDFLARE_API_TOKEN with the "Edit Cloudflare Workers" template, CLOUDFLARE_ACCOUNT_ID).
+# Without them the workflow does nothing (and stays green) instead of failing on every push.
 on:
   push:
     branches: [main]
@@ -23,20 +23,30 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
-      - uses: actions/checkout@v5
       - name: Check deploy secrets
+        id: gate
         run: |
           if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
-            echo "::error::Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID as repository secrets to enable deploys."
-            exit 1
+            echo "::notice::Deploy secrets are not set; skipping. Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID to enable deploys."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
           fi
+      - uses: actions/checkout@v5
+        if: steps.gate.outputs.enabled == 'true'
       - uses: actions/setup-node@v5
+        if: steps.gate.outputs.enabled == 'true'
         with:
           node-version: "lts/*"
-      - run: npm ci
-      - run: npm run build
-      - run: npm test
+      - if: steps.gate.outputs.enabled == 'true'
+        run: npm ci
+      - if: steps.gate.outputs.enabled == 'true'
+        run: npm run build
+      - if: steps.gate.outputs.enabled == 'true'
+        run: npm test
       - name: Deploy
+        if: steps.gate.outputs.enabled == 'true'
         run: npx wrangler@4 deploy
       - name: Smoke test the live endpoint
+        if: steps.gate.outputs.enabled == 'true'
         run: node scripts/live-contract.mjs
