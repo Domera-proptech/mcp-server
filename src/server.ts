@@ -33,7 +33,7 @@ export function createServer(fetchImpl: typeof fetch = fetch): McpServer {
         last_done: z.object(Object.fromEntries(KEYS.map((k) => [k, date])) as Record<(typeof KEYS)[number], typeof date>).partial().optional()
           .describe("Date of the last completed check per obligation, YYYY-MM-DD."),
       },
-      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      annotations: { title: "Swedish building inspections and compliance calendar", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },
     async (args) => {
       // On Cloudflare the origin sees shared egress IPs, so identical queries are cached at the edge for a few
