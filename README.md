@@ -29,3 +29,5 @@ A thin client over a public endpoint (`/api/public/obligations`). It contains no
 ## Contact
 
 hej@domera.se · https://domera.se
+
+See also: [swedish-property-data](https://github.com/Domera-proptech/swedish-property-data), open data and helpers for Swedish rent (KPI, reference rate, statutory figures), and Domera's [free calculators](https://domera.se/verktyg) (in Swedish).
