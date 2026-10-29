@@ -1,7 +1,11 @@
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { createServer } from "./server.js";
 
-type Env = { LIMITER?: { limit(options: { key: string }): Promise<{ success: boolean }> } };
+type Env = {
+  LIMITER?: { limit(options: { key: string }): Promise<{ success: boolean }> };
+  /** Public domain-verification token that OpenAI shows in its portal; empty until set. */
+  OPENAI_APPS_CHALLENGE?: string;
+};
 
 const MAX_BODY_BYTES = 16 * 1024;
 
@@ -11,6 +15,10 @@ export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const { pathname } = new URL(req.url);
     if (pathname === "/health") return new Response("ok");
+    // OpenAI domain verification: plain text token and nothing else.
+    if (pathname === "/.well-known/openai-apps-challenge" && req.method === "GET" && env.OPENAI_APPS_CHALLENGE) {
+      return new Response(env.OPENAI_APPS_CHALLENGE, { headers: { "content-type": "text/plain; charset=utf-8" } });
+    }
     if (pathname !== "/mcp") return new Response(null, { status: 404 });
     // Stateless: no server-initiated stream and no session to end, so only POST is served.
     if (req.method !== "POST") return new Response(null, { status: 405, headers: { allow: "POST" } });
